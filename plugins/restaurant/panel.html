@@ -1,0 +1,235 @@
+<!-- Restaurant Plugin Panel -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0" style="font-size:1.2rem;font-weight:700;color:#1e293b;">🍽️ Restaurant</h2>
+    <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-success" data-r-action="newOrder">+ New Order</button>
+        <button class="btn btn-sm btn-outline-secondary" data-r-action="manageTablesModal">Manage Tables</button>
+        <button class="btn btn-sm btn-outline-primary" data-r-action="refreshRestaurant">↻ Refresh</button>
+    </div>
+</div>
+
+<!-- Sub-tabs -->
+<ul class="nav nav-tabs mb-3" id="restaurantSubTabs">
+    <li class="nav-item"><button class="nav-link active" data-r-subtab="tables">Tables</button></li>
+    <li class="nav-item"><button class="nav-link" data-r-subtab="kitchen">Kitchen Board</button></li>
+    <li class="nav-item"><button class="nav-link" data-r-subtab="history">Order History</button></li>
+    <li class="nav-item"><button class="nav-link" data-r-subtab="menu">Menu</button></li>
+    <li class="nav-item"><button class="nav-link" data-r-subtab="sidedishes">Side Dishes</button></li>
+    <li class="nav-item"><button class="nav-link" data-r-subtab="payments">💳 Payments</button></li>
+</ul>
+
+<!-- Tables View -->
+<div id="r-panel-tables">
+    <div id="r-tables-grid" class="row g-3"></div>
+</div>
+
+<!-- Kitchen Board -->
+<div id="r-panel-kitchen" style="display:none;">
+    <div id="r-kitchen-board" class="row g-3"></div>
+</div>
+
+<!-- Order History -->
+<div id="r-panel-history" style="display:none;">
+    <div id="r-history-table"></div>
+</div>
+
+<!-- Menu -->
+<div id="r-panel-menu" style="display:none;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="fw-semibold">Menu Items</span>
+        <button class="btn btn-sm btn-success" data-r-action="newMenuItem">+ Add Item</button>
+    </div>
+    <div id="r-menu-list"></div>
+</div>
+
+<!-- Side Dishes -->
+<div id="r-panel-sidedishes" style="display:none;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="fw-semibold">Side Dishes</span>
+        <button class="btn btn-sm btn-success" data-r-action="newSideDish">+ Add Side Dish</button>
+    </div>
+    <div id="r-sidedishes-list"></div>
+</div>
+
+<!-- Payments History -->
+<div id="r-panel-payments" style="display:none;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="fw-semibold">Payment History</span>
+        <button class="btn btn-sm btn-outline-secondary" data-r-action="rPrintPaymentsHistory">&#x1F5A8; Print History</button>
+    </div>
+    <div id="r-payments-list"></div>
+</div>
+
+<!-- ── New / Edit Order Modal ─────────────────────────────────────── -->
+<div id="rOrderModal" style="display:none;position:fixed;z-index:1200;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.52);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:520px;">
+        <div class="modal-content p-4">
+            <h5 id="rOrderModalTitle" class="fw-bold mb-3">New Order</h5>
+            <input type="hidden" id="rOrderId">
+            <div class="mb-3 row g-2">
+                <div class="col">
+                    <label class="form-label">Table</label>
+                    <select id="rOrderTable" class="form-select form-select-sm"></select>
+                </div>
+                <div class="col">
+                    <label class="form-label">Status</label>
+                    <select id="rOrderStatus" class="form-select form-select-sm">
+                        <option value="pending">Pending</option>
+                        <option value="preparing">Preparing</option>
+                        <option value="ready">Ready</option>
+                        <option value="served">Served</option>
+                    </select>
+                </div>
+            </div>
+            <label class="form-label">Items</label>
+            <div id="rOrderItemsBody" class="mb-2"></div>
+            <button class="btn btn-sm btn-outline-secondary mb-3" data-r-action="rAddItemRow">+ Add Item</button>
+            <div class="mb-3">
+                <label class="form-label">Notes</label>
+                <textarea id="rOrderNotes" class="form-control form-control-sm" rows="2"></textarea>
+            </div>
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-primary" data-r-action="rSaveOrder">Save</button>
+                <button class="btn btn-secondary" data-r-action="rCloseOrderModal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Manage Tables Modal ──────────────────────────────────────── -->
+<div id="rTablesModal" style="display:none;position:fixed;z-index:1200;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.52);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
+        <div class="modal-content p-4">
+            <h5 class="fw-bold mb-3">Manage Tables</h5>
+            <div id="rTablesManageList" class="mb-3" style="max-height:320px;overflow-y:auto;"></div>
+            <div class="border-top pt-3">
+                <div class="row g-2 align-items-end">
+                    <div class="col"><label class="form-label mb-1">Name</label><input id="rNewTableName" type="text" class="form-control form-control-sm" placeholder="e.g. Table 9"></div>
+                    <div class="col-3"><label class="form-label mb-1">Seats</label><input id="rNewTableSeats" type="number" class="form-control form-control-sm" value="4" min="1"></div>
+                    <div class="col-auto"><button class="btn btn-sm btn-success" data-r-action="rAddTable">Add</button></div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end mt-3">
+                <button class="btn btn-secondary" data-r-action="rCloseTablesModal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Menu Item Modal ──────────────────────────────────────────── -->
+<div id="rMenuItemModal" style="display:none;position:fixed;z-index:1200;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.52);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:460px;">
+        <div class="modal-content p-4">
+            <h5 id="rMenuItemModalTitle" class="fw-bold mb-3">Add Menu Item</h5>
+            <input type="hidden" id="rMenuItemId">
+            <div class="mb-2">
+                <label class="form-label">Name</label>
+                <input id="rMenuItemName" type="text" class="form-control form-control-sm" placeholder="e.g. Grilled Chicken">
+            </div>
+            <div class="row g-2 mb-2">
+                <div class="col">
+                    <label class="form-label">Category</label>
+                    <input id="rMenuItemCategory" type="text" class="form-control form-control-sm" placeholder="e.g. Mains, Drinks, Desserts">
+                </div>
+                <div class="col-4">
+                    <label class="form-label">Price (R)</label>
+                    <input id="rMenuItemPrice" type="number" class="form-control form-control-sm" min="0" step="0.01" placeholder="0.00">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea id="rMenuItemDesc" class="form-control form-control-sm" rows="2" placeholder="Optional"></textarea>
+            </div>
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-primary" data-r-action="rSaveMenuItem">Save</button>
+                <button class="btn btn-secondary" data-r-action="rCloseMenuItemModal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Table Action Sheet ───────────────────────────────────────── -->
+<div id="rTableActionSheet" style="display:none;position:fixed;z-index:1300;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.55);">
+    <div style="position:absolute;bottom:0;left:0;right:0;max-width:520px;margin:0 auto;background:#1a2d42;border-radius:20px 20px 0 0;padding:24px;color:#fff;">
+        <div id="rActionSheetTableName" style="font-weight:700;font-size:1.15rem;margin-bottom:4px;"></div>
+        <div id="rActionSheetSubtitle" style="font-size:0.88rem;color:#8899aa;margin-bottom:20px;"></div>
+        <button class="btn btn-warning w-100 mb-2 py-3" style="font-size:1rem;font-weight:600;" data-r-action="rActionNewOrder">📋 Add / New Order</button>
+        <button class="btn btn-success w-100 mb-3 py-3" style="font-size:1rem;font-weight:600;" data-r-action="rActionViewBill">💳 View Bill &amp; Checkout</button>
+        <button class="btn btn-outline-secondary w-100" data-r-action="rDismissActionSheet">Cancel</button>
+    </div>
+</div>
+
+<!-- ── Bill & Checkout Modal ────────────────────────────────────── -->
+<div id="rBillModal" style="display:none;position:fixed;z-index:1400;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.6);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:500px;">
+        <div class="modal-content p-4">
+            <h5 id="rBillModalTitle" class="fw-bold mb-3">Bill</h5>
+            <div id="rBillItemsTable" class="mb-3" style="max-height:260px;overflow-y:auto;"></div>
+            <div class="d-flex justify-content-between align-items-center mb-3 p-2 rounded" style="background:#f0fdf4;">
+                <span class="fw-semibold">Total:</span>
+                <span id="rBillTotalDisplay" class="fw-bold text-success" style="font-size:1.25rem;">R 0.00</span>
+            </div>
+            <div class="row g-2 mb-3">
+                <div class="col">
+                    <label class="form-label mb-1">Tip (R)</label>
+                    <input type="number" id="rBillTip" class="form-control form-control-sm" value="0" min="0" step="0.01">
+                </div>
+                <div class="col">
+                    <label class="form-label mb-1">Payment Method</label>
+                    <select id="rBillMethod" class="form-select form-select-sm">
+                        <option value="cash">Cash</option>
+                        <option value="card">Card</option>
+                        <option value="eft">EFT</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Cash received / change — visible only for cash payments -->
+            <div id="rBillCashRow" style="display:none;margin-bottom:10px;">
+                <div class="d-flex gap-3 align-items-center">
+                    <div class="flex-fill">
+                        <label class="form-label mb-1 small fw-semibold">Cash Received (R)</label>
+                        <input id="rBillCashGiven" type="number" min="0" step="0.01" class="form-control form-control-sm" placeholder="0.00">
+                    </div>
+                    <div class="flex-fill text-end">
+                        <div class="small text-muted mb-1">Change Due</div>
+                        <div id="rBillChangeDisplay" class="fw-bold text-success" style="font-size:1.3rem;">—</div>
+                    </div>
+                </div>
+            </div>
+            <div id="rBillError" class="text-danger small mb-2"></div>
+            <div class="d-flex gap-2">
+                <button class="btn btn-success flex-grow-1 py-2 fw-semibold" data-r-action="rProcessCheckout">✓ Pay &amp; Close Table</button>
+                <button class="btn btn-outline-secondary px-3" data-r-action="rPrintBillPreReceipt" title="Print bill">🖨</button>
+                <button class="btn btn-secondary" data-r-action="rCloseBillModal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Side Dish Modal ──────────────────────────────────────────── -->
+<div id="rSideDishModal" style="display:none;position:fixed;z-index:1200;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.52);">
+    <div class="modal-dialog modal-dialog-centered" style="max-width:400px;">
+        <div class="modal-content p-4">
+            <h5 id="rSideDishModalTitle" class="fw-bold mb-3">Add Side Dish</h5>
+            <input type="hidden" id="rSideDishId">
+            <div class="mb-2">
+                <label class="form-label">Name</label>
+                <input id="rSideDishName" type="text" class="form-control form-control-sm" placeholder="e.g. Extra Sauce">
+            </div>
+            <div class="row g-2 mb-2">
+                <div class="col">
+                    <label class="form-label">Price (R)</label>
+                    <input id="rSideDishPrice" type="number" class="form-control form-control-sm" min="0" step="0.01" placeholder="0.00">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                <textarea id="rSideDishDesc" class="form-control form-control-sm" rows="2" placeholder="Optional"></textarea>
+            </div>
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-primary" data-r-action="rSaveSideDish">Save</button>
+                <button class="btn btn-secondary" data-r-action="rCloseSideDishModal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
