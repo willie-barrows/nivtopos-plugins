@@ -9,14 +9,14 @@
   "files": ["manifest.json", "db.js", "handlers.js", "integration.js", "panel.html", "panel.js"],
   "apks": [
     {
-      "name": "NIVTOPos.apk",
-      "label": "NIVTO POS (Android)",
-      "url": "https://github.com/willie-barrows/nivtopos-plugins/releases/download/v1.0.0/NIVTOPos.apk"
+      "name": "NIVTOKitchen.apk",
+      "label": "NIVTO Kitchen Display (Android)",
+      "url": "https://github.com/willie-barrows/nivtopos-plugins/releases/download/v1.0.0/NIVTOKitchen.apk"
     },
     {
-      "name": "NIVTOTimeClock.apk",
-      "label": "NIVTO Time Clock (Android)",
-      "url": "https://github.com/willie-barrows/nivtopos-plugins/releases/download/v1.0.0/NIVTOTimeClock.apk"
+      "name": "NIVTOWaiters.apk",
+      "label": "NIVTO Waiters App (Android)",
+      "url": "https://github.com/willie-barrows/nivtopos-plugins/releases/download/v1.0.0/NIVTOWaiters.apk"
     }
   ]
 }
