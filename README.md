@@ -12,8 +12,8 @@ Official plugin repository for [NivtoPOS](https://github.com/willie-barrows).
 
 | App | Download |
 |-----|----------|
-| NIVTO POS (Android) | [NIVTOPos.apk](https://github.com/willie-barrows/nivtopos-plugins/releases/latest/download/NIVTOPos.apk) |
-| NIVTO Time Clock | [NIVTOTimeClock.apk](https://github.com/willie-barrows/nivtopos-plugins/releases/latest/download/NIVTOTimeClock.apk) |
+| NIVTO Kitchen Display | [NIVTOKitchen.apk](https://github.com/willie-barrows/nivtopos-plugins/releases/latest/download/NIVTOKitchen.apk) |
+| NIVTO Waiters App | [NIVTOWaiters.apk](https://github.com/willie-barrows/nivtopos-plugins/releases/latest/download/NIVTOWaiters.apk) |
 
 ## Structure
 
