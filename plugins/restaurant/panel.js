@@ -774,4 +774,55 @@ ${Number(payment.change_given)>0?`<div style="display:flex;justify-content:space
     // Initial load + start timer
     loadRestaurant();
     startAutoRefresh();
+
+    // ── APK Download buttons (Kitchen tab) ─────────────────────────────────
+    const _kitchenBtn  = document.getElementById('r-dl-kitchen-btn');
+    const _waitersBtn  = document.getElementById('r-dl-waiters-btn');
+    const _progressEl  = document.getElementById('r-apk-progress');
+    const _progressLbl = document.getElementById('r-apk-progress-label');
+    const _progressBar = document.getElementById('r-apk-progress-bar');
+    const _progressPct = document.getElementById('r-apk-progress-pct');
+
+    function _showApkProgress(label, pct) {
+        _progressEl.style.display = '';
+        _progressLbl.textContent  = label;
+        _progressBar.style.width  = pct + '%';
+        _progressPct.textContent  = pct + '%';
+    }
+    function _hideApkProgress() { _progressEl.style.display = 'none'; }
+
+    async function _downloadApk(type) {
+        const btn = type === 'kitchen' ? _kitchenBtn : _waitersBtn;
+        btn.disabled = true;
+        _progressBar.style.background = '#0d6efd';
+
+        // Try direct copy first (APK already cached in userData/apks)
+        const quick = await api.downloadApk(type).catch(e => ({ ok: false, error: e.message }));
+        if (quick && quick.ok) { btn.disabled = false; _hideApkProgress(); return; }
+
+        // Not cached — download plugin + APKs from GitHub with progress
+        _showApkProgress('Connecting to GitHub…', 0);
+        api.onPluginDownloadProgress(d => {
+            _showApkProgress(d.step || d.label || 'Downloading…', d.pct || 0);
+        });
+
+        const dlResult = await api.installRemotePlugin('restaurant').catch(e => ({ success: false, error: e.message }));
+        if (!dlResult || !dlResult.success) {
+            _progressLbl.textContent  = '⚠️ Download failed — check your internet connection.';
+            _progressBar.style.background = '#dc3545';
+            btn.disabled = false;
+            return;
+        }
+
+        _hideApkProgress();
+        // APKs are now in userData/apks — copy to Downloads
+        const copyResult = await api.downloadApk(type).catch(e => ({ ok: false, error: e.message }));
+        btn.disabled = false;
+        if (!copyResult || !copyResult.ok) {
+            alert('Could not save APK: ' + (copyResult && copyResult.error ? copyResult.error : 'Unknown error'));
+        }
+    }
+
+    if (_kitchenBtn) _kitchenBtn.addEventListener('click', () => _downloadApk('kitchen'));
+    if (_waitersBtn) _waitersBtn.addEventListener('click', () => _downloadApk('waiter'));
 })();
